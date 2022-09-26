@@ -19,10 +19,10 @@
 // #defines
 //============
 //TODO: set up debug levels correctly
-#define DEBUG 0
-//#define TEST_LIGHTS       // turns on lights for a second on start up
+#define DEBUG
+#define TEST_LIGHTS       // turns on lights for a second on start up
 //#define TEST_ADC_SPEED    // used to test sample rate of ADCs
-//#define REPORT_TIMING     // prints timings over serial interface
+#define REPORT_TIMING     // prints timings over serial interface
 #define BUZZERTIME  1000  // length of time the buzzer is kept on after a hit (ms)
 #define LIGHTTIME   3000  // length of time the lights are kept on after a hit (ms)
 #define BAUDRATE   57600  // baudrate of the serial debug interface
@@ -39,7 +39,7 @@ const uint8_t shortLEDB  = 13;    // Short Circuit A Light
 
 const uint8_t groundPinA = A0;    // Ground A pin - Analog
 const uint8_t lamePinA   = A1;    // Lame   A pin - Analog (Epee return path)
-const uint8_t weaponPinA = A2;    // Weapon A pin - Analog
+const uint8_t weaponPinA = A2;    // We2apon A pin - Analog
 const uint8_t weaponPinB = A3;    // Weapon B pin - Analog
 const uint8_t lamePinB   = A4;    // Lame   B pin - Analog (Epee return path)
 const uint8_t groundPinB = A5;    // Ground B pin - Analog
@@ -112,18 +112,17 @@ void setup() {
    testLights();
 #endif
 
+
    // this optimises the ADC to make the sampling rate quicker
    //adcOpt();
 
    Serial.begin(BAUDRATE);
    Serial.println("Foil Scoring Box");
    Serial.println("================");
-
    resetValues();
 }
 
 
-//=============
 // ADC config
 //=============
 void adcOpt() {
@@ -201,6 +200,7 @@ void foil() {
          } else {
             if (depressAtime + depress[0] <= micros()) {
                hitOffTargA = true;
+               Serial.println("off Targ");
             }
          }
       } else {
@@ -237,6 +237,7 @@ void foil() {
       } else {
       // on target
          if (400 < weaponB && weaponB < 600 && 400 < lameA && lameA < 600) {
+            Serial.println("B on target");
             if (!depressedB) {
                depressBtime = micros();
                depressedB   = true;
@@ -265,7 +266,8 @@ void signalHits() {
       digitalWrite(offTargetA, hitOffTargA);
       digitalWrite(offTargetB, hitOffTargB);
       digitalWrite(onTargetB,  hitOnTargB);
-      digitalWrite(buzzerPin,  HIGH);
+//      digitalWrite(buzzerPin,  HIGH);
+      tone(buzzerPin, 2349);
 #ifdef DEBUG
       String serData = String("hitOnTargA  : ") + hitOnTargA  + "\n"
                             + "hitOffTargA : "  + hitOffTargA + "\n"
@@ -284,7 +286,8 @@ void signalHits() {
 //======================
 void resetValues() {
    delay(BUZZERTIME);             // wait before turning off the buzzer
-   digitalWrite(buzzerPin,  LOW);
+//   digitalWrite(buzzerPin,  LOW);
+   noTone(buzzerPin);
    delay(LIGHTTIME-BUZZERTIME);   // wait before turning off the lights
    digitalWrite(onTargetA,  LOW);
    digitalWrite(offTargetA, LOW);
@@ -318,6 +321,6 @@ void testLights() {
    digitalWrite(onTargetB,  HIGH);
    digitalWrite(shortLEDA,  HIGH);
    digitalWrite(shortLEDB,  HIGH);
-   delay(1000);
+   delay(100);
    resetValues();
 }
