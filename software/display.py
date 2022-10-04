@@ -40,7 +40,7 @@ class Timer:
          self.LastTicked = NewTicked
          return diff
       else:
-         print "Cannot Tick, Timer is paused"
+         print("Cannot Tick, Timer is paused")
 
    def GetTime(self):
       if self.started is False:
@@ -79,7 +79,7 @@ class serial_coms():
    def __init__(self, device, speed, timeout):
       self.ser = serial.Serial(device, speed, timeout=timeout)
       # create new timer here
-      print self.ser.portstr       # check which port was really used
+      print(self.ser.portstr)       # check which port was really used
    def wait_for_command(self):
       reset_lights(self)
       s = ""

@@ -1,19 +1,4 @@
-//===========================================================================//
-//                                                                           //
-//  Desc:    Arduino Code to implement a foil fencing scoring apparatus      //
-//  Dev:     Wnew                                                            //
-//  Date:    Nov  2012                                                       //
-//  Updated: Sept 2015                                                       //
-//  Notes:   1. Basis of algorithm from digitalwestie on github. Thanks Mate //
-//           2. Used uint8_t instead of int where possible to optimise       //
-//           3. Set ADC prescaler to 16 faster ADC reads                     //
-//                                                                           //
-//  To do:   1. Could use shift reg on lights and mode LEDs to save pins     //
-//           2. Use interrupts for buttons                                   //
-//           3. Implement short circuit LEDs (already provision for it)      //
-//           4. Set up debug levels correctly                                //
-//                                                                           //
-//===========================================================================//
+
 
 //============
 // #defines
@@ -30,12 +15,12 @@
 //============
 // Pin Setup
 //============
-const uint8_t shortLEDA  =  8;    // Short Circuit A Light
-const uint8_t onTargetA  =  9;    // On Target A Light
-const uint8_t offTargetA = 10;    // Off Target A Light
-const uint8_t offTargetB = 11;    // Off Target B Light
-const uint8_t onTargetB  = 12;    // On Target B Light
-const uint8_t shortLEDB  = 13;    // Short Circuit A Light
+const uint8_t shortLEDA  =  5;    // Short Circuit A Light
+const uint8_t onTargetA  =  6;    // On Target A Light
+const uint8_t offTargetA = 7;    // Off Target A Light
+const uint8_t offTargetB = 8;    // Off Target B Light
+const uint8_t onTargetB  = 9;    // On Target B Light
+const uint8_t shortLEDB  = 10;    // Short Circuit A Light
 
 const uint8_t groundPinA = A0;    // Ground A pin - Analog
 const uint8_t lamePinA   = A1;    // Lame   A pin - Analog (Epee return path)
@@ -189,22 +174,28 @@ void foil() {
        ((hitOnTargB || hitOffTargB) && (depressBtime + lockout[0] < now))) {
       lockedOut = true;
    }
-
+      Serial.print("weaoon A:"); 
+      Serial.println(weaponA);
+      Serial.print("Lame B:"); 
+      Serial.println(lameB);
    // weapon A
    if (hitOnTargA == false && hitOffTargA == false) { // ignore if A has already hit
       // off target
-      if (900 < weaponA && lameB < 100) {
+      //weaponA and lameB fucked up wiring, need to swap.
+//      if (lameB > 900 && weaponA < 100){
+        if (weaponA > 900 && lameB < 100){
+//        Serial.println("in off targ");
          if (!depressedA) {
             depressAtime = micros();
             depressedA   = true;
          } else {
             if (depressAtime + depress[0] <= micros()) {
                hitOffTargA = true;
-               Serial.println("off Targ");
             }
          }
       } else {
       // on target
+      
          if (400 < weaponA && weaponA < 600 && 400 < lameB && lameB < 600) {
             if (!depressedA) {
                depressAtime = micros();
@@ -237,7 +228,6 @@ void foil() {
       } else {
       // on target
          if (400 < weaponB && weaponB < 600 && 400 < lameA && lameA < 600) {
-            Serial.println("B on target");
             if (!depressedB) {
                depressBtime = micros();
                depressedB   = true;
