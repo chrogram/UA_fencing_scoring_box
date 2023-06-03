@@ -5,7 +5,7 @@
 //============
 //TODO: set up debug levels correctly
 #define DEBUG
-#define TEST_LIGHTS       // turns on lights for a second on start up
+//#define TEST_LIGHTS       // turns on lights for a second on start up
 //#define TEST_ADC_SPEED    // used to test sample rate of ADCs
 #define REPORT_TIMING     // prints timings over serial interface
 #define BUZZERTIME  1000  // length of time the buzzer is kept on after a hit (ms)
@@ -146,6 +146,8 @@ void loop() {
       lameA   = analogRead(lamePinA);
       lameB   = analogRead(lamePinB);
 
+      Serial.println(micros());
+
       signalHits();
       foil();
 
@@ -174,15 +176,13 @@ void foil() {
        ((hitOnTargB || hitOffTargB) && (depressBtime + lockout[0] < now))) {
       lockedOut = true;
    }
-      Serial.print("weaoon A:"); 
-      Serial.println(weaponA);
-      Serial.print("Lame B:"); 
-      Serial.println(lameB);
+     Serial.print("weaoon A:"); 
+     Serial.println(weaponA);
+     Serial.print("Lame B:"); 
+     Serial.println(lameB);
    // weapon A
    if (hitOnTargA == false && hitOffTargA == false) { // ignore if A has already hit
       // off target
-      //weaponA and lameB fucked up wiring, need to swap.
-//      if (lameB > 900 && weaponA < 100){
         if (weaponA > 900 && lameB < 100){
 //        Serial.println("in off targ");
          if (!depressedA) {
@@ -192,6 +192,7 @@ void foil() {
             if (depressAtime + depress[0] <= micros()) {
                hitOffTargA = true;
             }
+            
          }
       } else {
       // on target
